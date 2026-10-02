@@ -47,10 +47,16 @@ const OrderLookup = () => {
     setNotFound(false);
     setSearchedOrder(null);
     setIsLoading(true);
+    // #region agent log
+    fetch('http://127.0.0.1:7758/ingest/8d030dc0-0be5-4147-b94b-dd4cd5f61bfd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'15d935'},body:JSON.stringify({sessionId:'15d935',runId:'pre-fix',hypothesisId:'B',location:'OrderLookup.tsx:handleSearch:start',message:'search started',data:{orderId},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     
     const { order, error } = await getOrderByNumber(orderId);
     
     setIsLoading(false);
+    // #region agent log
+    fetch('http://127.0.0.1:7758/ingest/8d030dc0-0be5-4147-b94b-dd4cd5f61bfd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'15d935'},body:JSON.stringify({sessionId:'15d935',runId:'pre-fix',hypothesisId:'B,C,D',location:'OrderLookup.tsx:handleSearch:afterFetch',message:'search settled',data:{hasOrder:!!order,orderId:order?.id??null,status:order?.status??null,error:error??null},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     
     if (error) {
       setNotFound(true);
@@ -96,7 +102,6 @@ const OrderLookup = () => {
               </div>
               <Button
                 type="submit"
-                data-testid="search-order-button"
                 className="w-full"
                 disabled={!orderId.trim() || isLoading}
               >
@@ -140,13 +145,12 @@ const OrderLookup = () => {
                   <Package className="w-5 h-5 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Pedido</p>
-                    <p className="font-mono font-medium" data-testid="order-result-id">
+                    <p className="font-mono font-medium">
                       {searchedOrder.id}
                     </p>
                   </div>
                 </div>
                 <div
-                  data-testid="order-result-status"
                   className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${
                     searchedOrder.status === 'APROVADO'
                       ? 'bg-green-100 text-green-700'

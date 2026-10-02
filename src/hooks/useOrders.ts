@@ -101,11 +101,19 @@ export async function createOrder(orderData: {
 }
 
 export async function getOrderByNumber(orderNumber: string): Promise<{ order: Order | null; error: string | null }> {
+  const normalized = orderNumber.trim().toUpperCase();
+  // #region agent log
+  fetch('http://127.0.0.1:7758/ingest/8d030dc0-0be5-4147-b94b-dd4cd5f61bfd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'15d935'},body:JSON.stringify({sessionId:'15d935',runId:'pre-fix',hypothesisId:'B,E',location:'useOrders.ts:getOrderByNumber:before',message:'supabase lookup start',data:{normalized},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const { data, error } = await supabase
     .from('orders')
     .select('*')
-    .eq('order_number', orderNumber.trim().toUpperCase())
+    .eq('order_number', normalized)
     .maybeSingle();
+
+  // #region agent log
+  fetch('http://127.0.0.1:7758/ingest/8d030dc0-0be5-4147-b94b-dd4cd5f61bfd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'15d935'},body:JSON.stringify({sessionId:'15d935',runId:'pre-fix',hypothesisId:'B,C,E',location:'useOrders.ts:getOrderByNumber:after',message:'supabase lookup settled',data:{hasData:!!data,error:error?.message??null,orderNumber:(data as DbOrder|null)?.order_number??null,status:(data as DbOrder|null)?.status??null},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 
   if (error) {
     console.error('Error fetching order:', error);
