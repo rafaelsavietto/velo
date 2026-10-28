@@ -47,16 +47,10 @@ const OrderLookup = () => {
     setNotFound(false);
     setSearchedOrder(null);
     setIsLoading(true);
-    // #region agent log
-    fetch('http://127.0.0.1:7758/ingest/8d030dc0-0be5-4147-b94b-dd4cd5f61bfd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'15d935'},body:JSON.stringify({sessionId:'15d935',runId:'pre-fix',hypothesisId:'B',location:'OrderLookup.tsx:handleSearch:start',message:'search started',data:{orderId},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     
     const { order, error } = await getOrderByNumber(orderId);
     
     setIsLoading(false);
-    // #region agent log
-    fetch('http://127.0.0.1:7758/ingest/8d030dc0-0be5-4147-b94b-dd4cd5f61bfd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'15d935'},body:JSON.stringify({sessionId:'15d935',runId:'pre-fix',hypothesisId:'B,C,D',location:'OrderLookup.tsx:handleSearch:afterFetch',message:'search settled',data:{hasOrder:!!order,orderId:order?.id??null,status:order?.status??null,error:error??null},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     
     if (error) {
       setNotFound(true);
