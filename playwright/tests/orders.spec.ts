@@ -3,7 +3,7 @@ import { generateOrderCode } from '../support/helpers';
 
 // AAA - Arrange, Act, Assert 
 
-test.describe('Consulta de Pedido', ()=> {
+test.describe('Order Search Test Suite', ()=> {
 
   test.beforeEach(async ({page}) => {
     // Arrange
@@ -25,6 +25,8 @@ test.describe('Consulta de Pedido', ()=> {
     await page.getByRole('textbox', { name: 'Número do Pedido' }).fill(order);
     await page.getByRole('button', { name: 'Buscar Pedido' }).click();
   
+    // Assert
+
     // In case there´s no data-testid ou ID, then the solutions to find the exact Pedido text are presented below. However, the best solution would be
     // to add a data-testid yourself or ask the developer to do it.
     // Solution#1 -> Using an XPath locator
@@ -37,15 +39,44 @@ test.describe('Consulta de Pedido', ()=> {
   //     .filter({ hasText: /^Pedido$/ }) // Acento ^ significa início da string e $ significa fim da string
   //     .locator('..'); // Sobe para o elemento pai (a div que agrupa ambos)
   
-  // Solution #3 -> Using Playwright's own "exact" and using .last to find the innermost matching div
-      const containerPedido = page
-      .locator('div')
-      .filter({ has: page.getByText('Pedido', { exact: true }) })
-      .last(); // innermost matching div
+  // // Solution #3 -> Using Playwright's own "exact" and using .last to find the innermost matching div
+  //     const containerPedido = page
+  //     .locator('div')
+  //     .filter({ has: page.getByText('Pedido', { exact: true }) })
+  //     .last(); // innermost matching div
   
-    await expect(containerPedido).toContainText(order, { timeout: 10_000 });
+  //   await expect(containerPedido).toContainText(order, { timeout: 10_000 });
   
-    await expect(page.getByText('APROVADO')).toBeVisible();
+  //   await expect(page.getByText('APROVADO')).toBeVisible();
+  await expect(page.getByTestId(`order-result-${order}`)).toMatchAriaSnapshot(`
+    - img
+    - paragraph: Pedido
+    - paragraph: ${order}
+    - img
+    - text: APROVADO
+    - img "Velô Sprint"
+    - paragraph: Modelo
+    - paragraph: Velô Sprint
+    - paragraph: Cor
+    - paragraph: Glacier Blue
+    - paragraph: Interior
+    - paragraph: cream
+    - paragraph: Rodas
+    - paragraph: aero Wheels
+    - heading "Dados do Cliente" [level=4]
+    - paragraph: Nome
+    - paragraph: Rafael Silva
+    - paragraph: Email
+    - paragraph: teste@teste.com
+    - paragraph: Loja de Retirada
+    - paragraph
+    - paragraph: Data do Pedido
+    - paragraph: /\\d+\\/\\d+\\/\\d+/
+    - heading "Pagamento" [level=4]
+    - paragraph: À Vista
+    - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
+    `);
+  
   });
 
   test('should show an error message when an order is not found', async ({page}) => {
